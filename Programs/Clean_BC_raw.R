@@ -15,8 +15,8 @@ library(lubridate)
 dir <- "/Users/johnkim/Desktop/brightlineAQ/"
 
 # Read in raw files from Clarity
-new_data0 <- read.csv(paste0(dir,"RAW/BC_12dec24_14jan25.csv"))
-# old_data0 <- read.csv("BC_start_end.csv")
+new_data0 <- read.csv(paste0(dir,"RAW/BC_14jan25_4mar25.csv"))
+old_data0 <- read.csv(paste0(dir,"CLEAN/cleanBC_12dec24_14jan25.csv"))[,2:20]
 
 # Drop unnecessary columns and select relevant ones
 data <- new_data0 %>%
@@ -64,6 +64,10 @@ names(data) = c('alt.ID','ID','Latitude','Longitude',
 # Check data
 head(data)
 
+# combine with old
+combined <- rbind(old_data0, data)
+updated <- combined[!duplicated(combined), ] # drop dups if any
+
 # Save to csv
-write.csv(data,paste0(dir,"CLEAN/cleanBC_12dec24_14jan25.csv"))
+write.csv(updated,paste0(dir,"CLEAN/cleanBC_12dec24_4mar25.csv"))
 
