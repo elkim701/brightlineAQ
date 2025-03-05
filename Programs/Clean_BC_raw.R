@@ -39,9 +39,11 @@ data$startOfPeriod <- ymd_hms(data$startOfPeriod, tz = Sys.timezone())
 # Create a column for Neighborhood
 data <- data %>%
   mutate(Neighborhood = case_when(
-    datasourceId == "DVCKP7679" ~ "BVHP",
-    datasourceId == "DPANQ2934" ~ "Potrero Hill",
-    datasourceId == "DNHZP3586" ~ "SoMa"
+    datasourceId %in% c("DVCKP7679","DGVIU8498") ~ "BVHP",
+    datasourceId %in% c("DPANQ2934", "DBUFQ1648") ~ "Potrero Hill",
+    datasourceId %in% c("DNHZP3586", "DCDBK0901") ~ "SoMa",
+    datasourceId %in% c("DSARJ4044" ,"DEVXA9067") ~ "Tenderloin",
+    datasourceId %in% c("DAJXS2653","DFPAI0612" ) ~ "Chinatown",
   ))
     
 
@@ -50,7 +52,14 @@ data <- data %>%
   mutate(Device_Name = case_when(
     datasourceId == "DVCKP7679" ~ "BVHP Foundation",
     datasourceId == "DPANQ2934" ~ "Air District Reference Site",
-    datasourceId == "DNHZP3586" ~ "Fitness SF SOMA"
+    datasourceId == "DNHZP3586" ~ "Fitness SF SOMA",
+    datasourceId == "DVCKP7679" ~ "Wu Yee Kirkwood",
+    datasourceId == "DBUFQ1648" ~ "Joseph Lee Rec Center",
+    datasourceId == "DEVXA9067" ~ "126 Hyde St",
+    datasourceId == "DCDBK0901" ~ "United Playaz",
+    datasourceId == "DSARJ4044" ~ "Drake Hotel",
+    datasourceId == "DAJXS2653" ~ "665 Clay St",
+    datasourceId == "DFPAI0612" ~ "Bayside Elderly"
   ))
 
 # Rename columns
