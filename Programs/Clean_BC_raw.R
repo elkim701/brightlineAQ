@@ -17,7 +17,7 @@ dir <- "/Users/johnkim/Desktop/brightlineAQ/"
 # Read in raw files from Clarity
 new_data0 <- read.csv(paste0(dir,"RAW/BC_14jan25_4mar25.csv"))
 old_data0 <- read.csv(paste0(dir,"CLEAN/cleanBC_12dec24_14jan25.csv"))[,2:20]
-
+names(new_data0)
 # Drop unnecessary columns and select relevant ones
 data <- new_data0 %>%
   select(contains("sourceId") |
@@ -53,7 +53,7 @@ data <- data %>%
     datasourceId == "DVCKP7679" ~ "BVHP Foundation",
     datasourceId == "DPANQ2934" ~ "Air District Reference Site",
     datasourceId == "DNHZP3586" ~ "Fitness SF SOMA",
-    datasourceId == "DVCKP7679" ~ "Wu Yee Kirkwood",
+    datasourceId == "DGVIU8498" ~ "Wu Yee Kirkwood",
     datasourceId == "DBUFQ1648" ~ "Joseph Lee Rec Center",
     datasourceId == "DEVXA9067" ~ "126 Hyde St",
     datasourceId == "DCDBK0901" ~ "United Playaz",
