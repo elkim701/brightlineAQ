@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------
 # Title: Data Cleaning for Raw BC Clarity Data
 # Author: Eleanor Kim
-# Last Updated: 14 January 2025
+# Last Updated: 21 March 2025
 # Description: This script performs data cleaning for raw Clarity data, 
 #              including the addition of device names and neighborhood 
 #              classifications, and preparing the data for further analysis.
@@ -14,10 +14,11 @@ library(lubridate)
 # Set-up
 dir <- "/Users/johnkim/Desktop/brightlineAQ/"
 
+
 # Read in raw files from Clarity
-new_data0 <- read.csv(paste0(dir,"RAW/BC_14jan25_4mar25.csv"))
-old_data0 <- read.csv(paste0(dir,"CLEAN/cleanBC_12dec24_14jan25.csv"))[,2:20]
-names(new_data0)
+new_data0 <- read.csv(paste0(dir,"RAW/BC_21mar25_30apr25.csv"))
+old_data0 <- read.csv(paste0(dir,"CLEAN/cleanBC_12dec24_21mar25.csv"))[,2:20] # rm index col
+
 # Drop unnecessary columns and select relevant ones
 data <- new_data0 %>%
   select(contains("sourceId") |
@@ -34,7 +35,7 @@ names(data)
 
 # Convert to datetime standard and Pacific Time
 data$startOfPeriod <- ymd_hms(data$startOfPeriod, tz = Sys.timezone())
-#old_data0$Datetime <- ymd_hms(old_data0$Datetime, tz = Sys.timezone())
+old_data0$Datetime <- ymd_hms(old_data0$Datetime, tz = Sys.timezone())
 
 # Create a column for Neighborhood
 data <- data %>%
@@ -78,5 +79,28 @@ combined <- rbind(old_data0, data)
 updated <- combined[!duplicated(combined), ] # drop dups if any
 
 # Save to csv
-write.csv(updated,paste0(dir,"CLEAN/cleanBC_12dec24_4mar25.csv"))
+write.csv(updated,paste0(dir,"CLEAN/cleanBC_12dec24_21mar25.csv"))
 
+
+# combine with old PM data
+old_dataPM <- read.csv(paste0(dir,"CLEAN/cleanPM_19aug20_31dec24.csv"))[,2:12] # rm index col
+dataPM <- old_dataPM %>%
+  mutate(
+    BC_AllSources_Hour_Calibrated = NA,
+    BC_Biomass_Hour_Calibrated = NA,
+    BC_FossilFuel_Hour_Calibrated = NA,
+    BC_SpectralB1_Hour_Calibrated = NA,
+    BC_SpectralG1_Hour_Calibrated = NA,
+    BC_SpectralIR1_Hour_Calibrated = NA,
+    BC_SpectralR1_Hour_Calibrated = NA,
+    BC_SpectralUV1_Hour_Calibrated = NA
+  ) %>% select(names(updated))
+dataPM$Datetime <- ymd_hms(dataPM$Datetime, tz = Sys.timezone())
+
+combined2 <- rbind(dataPM, updated)
+updated2 <- combined2[!duplicated(combined2), ]
+updated2$Datetime <- ymd_hms(updated2$Datetime, tz = Sys.timezone())
+max(updated2$Datetime)
+write.csv(updated2,paste0(dir,"CLEAN/cleanBCPM_19aug20_30apr25.csv"))
+tmp <- read.csv(paste0(dir,"CLEAN/cleanBCPM_19aug20_21mar25.csv"))
+max(tmp$Datetime)
