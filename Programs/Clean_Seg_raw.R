@@ -113,6 +113,11 @@ dim(aq_segments)
 head(aq_segments)
 
 # -----------------------
-# Save final dataset
+# Save  datasets
 # -----------------------
+
+# Dec 2024 - Mar 2025
 write.csv(aq_segments, paste0(dir, "CLEAN/bc_sfcta_seg_dec24_mar25.csv"), row.names = FALSE)
+
+# March only version
+write.csv(aq_segments %>% filter(month == 3), paste0(dir, "CLEAN/bc_sfcta_seg_mar25.csv"), row.names = FALSE)
