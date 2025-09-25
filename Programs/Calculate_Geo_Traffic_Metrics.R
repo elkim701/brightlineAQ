@@ -67,7 +67,9 @@ names(aq)
 aq_filtered <- aq %>% filter(Datetime >= '2024-12-01' & Datetime <= '2025-03-31' & Device_Name %in% sensor_locs$device_name,BC_AllSources_Hour_Calibrated>0 ) %>% 
   mutate(Datetime = ymd_hms(Datetime),
          month = month(Datetime),
-         hour  = hour(Datetime)) %>%
+         hour  = hour(Datetime),
+         wday  = wday(Datetime)) %>%
+  filter(wday %in% c(3, 4, 5)) %>% # Filter Tues, Wed, Thurs
   select(Datetime, Device_Name, month, hour, Temperature, Humidity, BC_AllSources_Hour_Calibrated, `PM2.5_Hour_MassConc_Calibrated`, NO2_Hour_MassConc_Calibrated) %>%
   group_by(Device_Name, month, hour) %>%
   summarise(
