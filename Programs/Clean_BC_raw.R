@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------
 # Title: Data Cleaning for Raw BC Clarity Data
 # Author: Eleanor Kim
-# Last Updated: 2 August 2025
+# Last Updated: 29 October 2025
 # Description: This script performs data cleaning for raw Clarity data,
 #              including the addition of device names and neighborhood
 #              classifications, and preparing the data for further analysis.
@@ -21,8 +21,8 @@ dir <- "/Users/johnkim/Desktop/brightlineAQ/"
 # ----------------------------------------------------
 # Import raw + old cleaned data
 # ----------------------------------------------------
-new_data_raw <- read.csv(paste0(dir,"RAW/BC_7jul25_22aug25.csv"))
-old_data_raw <- read.csv(paste0(dir,"CLEAN/cleanBC_12dec24_7jul25.csv"))[,2:20]  # remove index col
+new_data_raw <- read.csv(paste0(dir,"RAW/BC_22aug25_29oct25.csv"))
+old_data_raw <- read.csv(paste0(dir,"CLEAN/cleanBC_use.csv"))[,2:20]  # remove index col
 
 # ----------------------------------------------------
 # Define device metadata (Device_Name + Neighborhood)
@@ -52,29 +52,31 @@ old_data <- old_data_raw %>%
     Neighborhood = coalesce(Neighborhood.x, Neighborhood.y, Neighborhood)
   ) %>%
   select(-Device_Name.x, -Device_Name.y, -Neighborhood.x, -Neighborhood.y)
+old_data <- old_data_raw
 
+names(new_data_raw)
 # ----------------------------------------------------
 # Select + rename relevant columns in new data
 # ----------------------------------------------------
 new_data <- new_data_raw %>%
   select(
     alt.ID           = datasourceId,
-    ID               = locationId,
-    Latitude         = latitude,
-    Longitude        = longitude,
-    BC_AllSources_Hour_Calibrated      = bc1HourMean.value,
+    ID               = sourceId,
+    Latitude         = locationLatitude,
+    Longitude        = locationLongitude,
+    BC_AllSources_Hour_Calibrated      = bcAllSources1HourMean.value,
     BC_Biomass_Hour_Calibrated         = bcBiomass1HourMean.value,
-    BC_FossilFuel_Hour_Calibrated      = bcFossil1HourMean.value,
-    BC_SpectralB1_Hour_Calibrated      = bcB1HourMean.value,
-    BC_SpectralG1_Hour_Calibrated      = bcG1HourMean.value,
-    BC_SpectralIR1_Hour_Calibrated     = bcIR1HourMean.value,
-    BC_SpectralR1_Hour_Calibrated      = bcR1HourMean.value,
-    BC_SpectralUV1_Hour_Calibrated     = bcUV1HourMean.value,
+    BC_FossilFuel_Hour_Calibrated      = bcFossilFuel1HourMean.value,
+    BC_SpectralB1_Hour_Calibrated      = bcSpectralB1HourMean.value,
+    BC_SpectralG1_Hour_Calibrated      = bcSpectralG1HourMean.value,
+    BC_SpectralIR1_Hour_Calibrated     = bcSpectralIR1HourMean.value,
+    BC_SpectralR1_Hour_Calibrated      = bcSpectralR1HourMean.value,
+    BC_SpectralUV1_Hour_Calibrated     = bcSpectralUV1HourMean.value,
     Datetime                           = startOfPeriod,
     Temperature                        = temperatureInternal1HourMean.value,
     Humidity                           = relHumidInternal1HourMean.value,
     PM2.5_Hour_MassConc_Calibrated     = pm2_5ConcMass1HourMean.value,
-    NO2_Hour_MassConc_Calibrated       = o2Conc1HourMean.value
+    NO2_Hour_MassConc_Calibrated       = no2Conc1HourMean.value
   ) %>%
   mutate(
     Datetime = ymd_hms(Datetime, tz = Sys.timezone())
