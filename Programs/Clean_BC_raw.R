@@ -21,9 +21,9 @@ dir <- "/Users/johnkim/Desktop/brightlineAQ/"
 # ----------------------------------------------------
 # Import raw + old cleaned data
 # ----------------------------------------------------
-new_data_raw <- read.csv(paste0(dir,"RAW/BC_22aug25_29oct25.csv"))
-old_data_raw <- read.csv(paste0(dir,"CLEAN/cleanBC_use.csv"))[,2:20]  # remove index col
-
+new_data_raw <- read.csv(paste0(dir,"RAW/BC_29oct25_25dec25.csv"))
+old_data_raw <- read.csv(paste0(dir,"CLEAN/cleanBC_use.csv"))  # remove index col
+names(old_data_raw)
 # ----------------------------------------------------
 # Define device metadata (Device_Name + Neighborhood)
 # ----------------------------------------------------
@@ -42,19 +42,7 @@ device_lookup <- tribble(
   "DSUSD5545", "Broadway St. & Stockton St. (BC)",    "Chinatown"
 )
 
-# ----------------------------------------------------
-# Clean old data (attach Device_Name + Neighborhood)
-# ----------------------------------------------------
-old_data <- old_data_raw %>%
-  left_join(device_lookup, by = "alt.ID") %>%
-  mutate(
-    Device_Name  = coalesce(Device_Name.x, Device_Name.y, Device_Name),
-    Neighborhood = coalesce(Neighborhood.x, Neighborhood.y, Neighborhood)
-  ) %>%
-  select(-Device_Name.x, -Device_Name.y, -Neighborhood.x, -Neighborhood.y)
-old_data <- old_data_raw
 
-names(new_data_raw)
 # ----------------------------------------------------
 # Select + rename relevant columns in new data
 # ----------------------------------------------------
@@ -86,7 +74,7 @@ new_data <- new_data_raw %>%
 # ----------------------------------------------------
 # Make sure datetime formats align
 # ----------------------------------------------------
-old_data <- old_data %>%
+old_data <- old_data_raw %>%
   mutate(Datetime = ymd_hms(Datetime, tz = Sys.timezone()))
 
 # ----------------------------------------------------
@@ -94,9 +82,17 @@ old_data <- old_data %>%
 # ----------------------------------------------------
 combined <- bind_rows(old_data, new_data) %>%
   distinct()
-
+max(combined$Datetime)
 # ----------------------------------------------------
 # Save updated dataset
 # ----------------------------------------------------
 write.csv(combined, paste0(dir,"CLEAN/cleanBC_use.csv"), row.names = FALSE)
 
+fulldata <- read.csv(paste0(dir,"CLEAN/cleanBC_use.csv")) 
+data24 <- fulldata %>% filter(year(Datetime)==2024) %>% 
+  select(Datetime, Device_Name, Neighborhood, ID, alt.ID, Latitude, Longitude,
+         PM2.5_Hour_MassConc_Calibrated,NO2_Hour_MassConc_Calibrated,
+         BC_AllSources_Hour_Calibrated,BC_Biomass_Hour_Calibrated,BC_FossilFuel_Hour_Calibrated,
+         Temperature,Humidity)
+write.csv(data24, paste0(dir,"CLEAN/BrightlineAQ_2024.csv"), row.names = FALSE)
+x
